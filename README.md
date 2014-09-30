@@ -1,4 +1,10 @@
-# go-perm - Permutation Generator in Go
+# Permutation Generator in Go
+
+## Installation
+
+```
+$ go get -u github.com/yosssi/go-perm
+```
 
 ## Usage
 
