@@ -11,19 +11,21 @@ func Int(src []int) [][]int {
 
 	pSlicesIdx := 0
 
-	genInt(src, srcLen, 0, make(map[int]struct{}), make([]int, srcLen, srcLen), pSlices, &pSlicesIdx)
+	unusedIndices := make([]int, srcLen, srcLen)
+
+	for i := 0; i < srcLen; i++ {
+		unusedIndices[i] = i
+	}
+
+	genInt(src, srcLen, 0, unusedIndices, make([]int, srcLen, srcLen), pSlices, &pSlicesIdx)
 
 	return pSlices
 }
 
 // genInt generates permutation slices which have int elements.
-func genInt(src []int, srcLen int, recurCnt int, usedIndices map[int]struct{}, work []int, pSlices [][]int, pSlicesIdx *int) {
-	for i, v := range src {
-		if _, ok := usedIndices[i]; ok {
-			continue
-		}
-
-		work[recurCnt] = v
+func genInt(src []int, srcLen int, recurCnt int, unusedIndices []int, work []int, pSlices [][]int, pSlicesIdx *int) {
+	for idx, i := range unusedIndices {
+		work[recurCnt] = src[i]
 
 		if recurCnt == srcLen-1 {
 			tmp := make([]int, srcLen, srcLen)
@@ -33,11 +35,23 @@ func genInt(src []int, srcLen int, recurCnt int, usedIndices map[int]struct{}, w
 			return
 		}
 
-		usedIndices[i] = struct{}{}
+		l := len(unusedIndices)
 
-		genInt(src, srcLen, recurCnt+1, usedIndices, work, pSlices, pSlicesIdx)
+		tmp := make([]int, l-1, l-1)
 
-		delete(usedIndices, i)
+		tmpIdx := 0
+
+		for _, n := range unusedIndices[:idx] {
+			tmp[tmpIdx] = n
+			tmpIdx++
+		}
+
+		for _, n := range unusedIndices[idx+1:] {
+			tmp[tmpIdx] = n
+			tmpIdx++
+		}
+
+		genInt(src, srcLen, recurCnt+1, tmp, work, pSlices, pSlicesIdx)
 	}
 }
 
